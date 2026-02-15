@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>X Translation Archive</title>
+<title>My X Translation Archive</title>
 
 <style>
 body {
@@ -13,8 +13,8 @@ body {
 
 .container {
   display: grid;
-  grid-template-columns: 250px 1fr 300px;
-  height: 100vh;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
 }
 
 /* Sidebar */
@@ -28,43 +28,45 @@ body {
   margin-top: 0;
 }
 
+.sidebar p {
+  margin: 10px 0;
+  color: #555;
+}
+
 /* Feed */
 .feed {
-  padding: 20px;
-  overflow-y: auto;
+  padding: 30px;
+  max-width: 700px;
 }
 
-/* Right panel */
-.timeline {
-  background: white;
-  padding: 20px;
-  border-left: 1px solid #ddd;
-}
-
-/* Post style */
+/* Post */
 .post {
   background: white;
   padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 10px;
+  margin-bottom: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .translation {
   display: none;
   background: #f0f0f0;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
   border-radius: 8px;
 }
 
 button {
   margin-top: 10px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border: none;
   background: black;
   color: white;
   cursor: pointer;
   border-radius: 5px;
+}
+button:hover {
+  opacity: 0.8;
 }
 </style>
 </head>
@@ -73,20 +75,19 @@ button {
 
 <div class="container">
 
-  <!-- ซ้าย -->
+  <!-- Sidebar -->
   <div class="sidebar">
-    <h2>IKIZULIVE</h2>
-    <p>Home</p>
-    <p>Translated</p>
-    <p>Search</p>
-    <p>Members</p>
+    <h2>🐦 My Archive</h2>
+    <p>Translated Posts</p>
+    <p>About Me</p>
+    <p>Contact</p>
   </div>
 
-  <!-- กลาง -->
+  <!-- Feed -->
   <div class="feed">
 
     <div class="post">
-      <!-- วาง embed X ตรงนี้ -->
+      <!-- วาง embed ของ X ตรงนี้ -->
       <blockquote class="twitter-tweet">
         <a href="https://twitter.com/USER/status/POSTID"></a>
       </blockquote>
@@ -98,14 +99,6 @@ button {
       </div>
     </div>
 
-  </div>
-
-  <!-- ขวา -->
-  <div class="timeline">
-    <h3>Timeline</h3>
-    <p>March 2025</p>
-    <p>April 2025</p>
-    <p>May 2025</p>
   </div>
 
 </div>
