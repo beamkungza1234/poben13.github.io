@@ -12,22 +12,17 @@ body{
   background:#e9ecef;
 }
 
-/* Layout */
 .wrapper{
   display:flex;
   height:100vh;
 }
 
-/* LEFT PANEL */
+/* LEFT */
 .left{
-  width:250px;
+  width:260px;
   background:#f1f1f1;
   padding:20px;
   border-right:1px solid #ccc;
-}
-
-.left h2{
-  margin-top:0;
 }
 
 .left textarea{
@@ -53,7 +48,7 @@ body{
 .post-card{
   background:white;
   padding:20px;
-  border-radius:12px;
+  border-radius:14px;
   margin-bottom:30px;
 }
 
@@ -78,9 +73,9 @@ body{
   cursor:pointer;
 }
 
-/* RIGHT PANEL */
+/* RIGHT */
 .right{
-  width:250px;
+  width:260px;
   background:#f8f9fa;
   padding:20px;
   border-left:1px solid #ccc;
@@ -108,8 +103,8 @@ body{
 <h2>IKIZULIVE</h2>
 
 <h4>เพิ่มหลายโพสต์</h4>
-<p>ลิงก์ (1 บรรทัด = 1 ลิงก์)</p>
-<textarea id="linkInput" rows="5"></textarea>
+<p>1 บรรทัด = 1 ลิงก์</p>
+<textarea id="linkInput" rows="8"></textarea>
 
 <p>คำแปล</p>
 <textarea id="translateInput" rows="5"></textarea>
@@ -151,7 +146,14 @@ const postsRef = collection(db,"posts");
 const postsContainer = document.getElementById("posts");
 const timelineContainer = document.getElementById("timelineButtons");
 
-let allPosts=[];
+let allPosts = [];
+let monthMap = {};
+
+function getDateFromTweetId(id){
+  const twitterEpoch = 1288834974657n;
+  const timestamp = (BigInt(id) >> 22n) + twitterEpoch;
+  return new Date(Number(timestamp));
+}
 
 function render(posts){
   postsContainer.innerHTML="";
@@ -196,12 +198,14 @@ window.addPosts=async()=>{
 
   for(let link of links){
     if(!link.trim()) continue;
+
     const postId=link.split("/").pop();
+    const autoDate=getDateFromTweetId(postId);
 
     await addDoc(postsRef,{
       postId:postId,
       content:translate,
-      createdAt:Timestamp.now()
+      createdAt:Timestamp.fromDate(autoDate)
     });
   }
 
@@ -209,21 +213,21 @@ window.addPosts=async()=>{
   document.getElementById("translateInput").value="";
 }
 
-window.showAll=()=>{
-  render(allPosts);
-}
+window.showAll=()=>render(allPosts);
 
 const q=query(postsRef,orderBy("createdAt","asc"));
 
 onSnapshot(q,(snapshot)=>{
   allPosts=[];
-  let monthMap={};
+  monthMap={};
   timelineContainer.innerHTML="";
 
   snapshot.forEach(docSnap=>{
     const data=docSnap.data();
     const date=data.createdAt.toDate();
-    const key=`${date.getMonth()+1}-${date.getFullYear()}`;
+    const month=date.getMonth()+1;
+    const year=date.getFullYear();
+    const key=`${month}-${year}`;
 
     const post={id:docSnap.id,...data};
     allPosts.push(post);
@@ -232,7 +236,11 @@ onSnapshot(q,(snapshot)=>{
     monthMap[key].push(post);
   });
 
-  Object.keys(monthMap).forEach(key=>{
+  Object.keys(monthMap).sort((a,b)=>{
+    const [m1,y1]=a.split("-");
+    const [m2,y2]=b.split("-");
+    return new Date(y1,m1-1)-new Date(y2,m2-1);
+  }).forEach(key=>{
     const [m,y]=key.split("-");
     const btn=document.createElement("button");
     btn.className="timeline-btn";
