@@ -180,9 +180,11 @@ function createPost(post){
       <button class="btn-danger" onclick="deletePost('${post.id}')">ลบ</button>
     </div>
 
-    <p id="trans-${post.id}" style="display:none;margin-top:10px;">
-      ${post.content}
-    </p>
+    <p id="trans-${post.id}" 
+   style="display:none;margin-top:10px; white-space: pre-line;">
+  ${post.content}
+</p>
+
   `;
 
   postsContainer.appendChild(div);
