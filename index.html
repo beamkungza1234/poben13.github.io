@@ -48,6 +48,7 @@ body {
   padding: 15px;
   margin-bottom: 20px;
   border-radius: 10px;
+  position: relative;
 }
 
 .translation {
@@ -67,6 +68,11 @@ button {
   color: white;
   cursor: pointer;
   border-radius: 5px;
+  margin-right: 5px;
+}
+
+.delete-btn {
+  background: #d11a2a;
 }
 
 input, textarea {
@@ -98,14 +104,13 @@ input, textarea {
     <input type="text" id="postUrl" placeholder="https://x.com/...">
 
     <label>คำแปลของคุณ</label>
-    <textarea id="postTranslation" rows="5" placeholder="ใส่คำแปลตรงนี้"></textarea>
+    <textarea id="postTranslation" placeholder="ใส่คำแปลตรงนี้"></textarea>
 
     <button onclick="addPost()">เพิ่มโพสต์</button>
   </div>
 
   <!-- กลาง -->
-  <div class="feed" id="feed">
-  </div>
+  <div class="feed"></div>
 
   <!-- ขวา -->
   <div class="timeline">
@@ -120,8 +125,9 @@ input, textarea {
 <script async src="https://platform.twitter.com/widgets.js"></script>
 
 <script>
+
 function toggle(button) {
-  const translation = button.nextElementSibling;
+  const translation = button.parentElement.querySelector(".translation");
 
   if (translation.style.display === "none" || translation.style.display === "") {
     translation.style.display = "block";
@@ -144,50 +150,66 @@ function addPost() {
     return;
   }
 
-  // แปลง x.com เป็น twitter.com
   url = url.replace("x.com", "twitter.com");
   url = url.split("?")[0];
 
-  createPostElement(url, translation, true);
+  const id = Date.now(); // สร้าง id ไม่ซ้ำ
 
-  savePost(url, translation);
+  createPostElement(id, url, translation, true);
 
   urlInput.value = "";
   translationInput.value = "";
 }
 
-function createPostElement(url, translation, prepend = false) {
-  const feed = document.getElementById("feed");
+function createPostElement(id, url, translation, save = false) {
+  const feed = document.querySelector(".feed");
 
   const postDiv = document.createElement("div");
   postDiv.className = "post";
+  postDiv.setAttribute("data-id", id);
 
   postDiv.innerHTML = `
     <blockquote class="twitter-tweet">
       <a href="${url}"></a>
     </blockquote>
 
-    <button onclick="toggle(this)">ดูคำแปล</button>
+    <div>
+      <button onclick="toggle(this)">ดูคำแปล</button>
+      <button class="delete-btn" onclick="deletePost(${id})">ลบโพสต์</button>
+    </div>
 
     <div class="translation">
-      ${translation}
+${translation}
     </div>
   `;
 
-  if (prepend) {
-    feed.prepend(postDiv);
-  } else {
-    feed.appendChild(postDiv);
-  }
+  feed.prepend(postDiv);
 
   if (window.twttr) {
     window.twttr.widgets.load(postDiv);
   }
+
+  if (save) {
+    savePost(id, url, translation);
+  }
 }
 
-function savePost(url, translation) {
+function deletePost(id) {
+  if (!confirm("คุณแน่ใจว่าต้องการลบโพสต์นี้?")) return;
+
+  // ลบจากหน้าเว็บ
+  const postElement = document.querySelector(`[data-id='${id}']`);
+  if (postElement) postElement.remove();
+
+  // ลบจาก localStorage
   let posts = JSON.parse(localStorage.getItem("posts")) || [];
-  posts.unshift({ url, translation });
+  posts = posts.filter(post => post.id !== id);
+  localStorage.setItem("posts", JSON.stringify(posts));
+}
+
+function savePost(id, url, translation) {
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+  posts.unshift({ id, url, translation });
   localStorage.setItem("posts", JSON.stringify(posts));
 }
 
@@ -195,15 +217,12 @@ function loadPosts() {
   let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
   posts.forEach(post => {
-    createPostElement(post.url, post.translation, false);
+    createPostElement(post.id, post.url, post.translation, false);
   });
-
-  if (window.twttr) {
-    window.twttr.widgets.load();
-  }
 }
 
 document.addEventListener("DOMContentLoaded", loadPosts);
+
 </script>
 
 </body>
