@@ -165,14 +165,25 @@ function render(posts){
   if(window.twttr) window.twttr.widgets.load();
 }
 
-function createPost(post){
-  const div=document.createElement("div");
-  div.className="post-card";
+function createPost(post) {
+  const div = document.createElement("div");
+  div.className = "post-card";
 
-  div.innerHTML=`
-    <blockquote class="twitter-tweet">
-      <a href="https://twitter.com/i/status/${post.postId}"></a>
-    </blockquote>
+  // ✅ เพิ่มบรรทัดนี้ตรงนี้เลย
+  const ids = post.postIds || [post.postId];
+
+  let tweetsHTML = "";
+
+  ids.forEach(id => {
+    tweetsHTML += `
+      <blockquote class="twitter-tweet">
+        <a href="https://twitter.com/i/status/${id}"></a>
+      </blockquote>
+    `;
+  });
+
+  div.innerHTML = `
+    ${tweetsHTML}
 
     <div class="post-actions">
       <button class="btn-dark" onclick="toggleTranslate('${post.id}')">ดูคำแปล</button>
@@ -199,25 +210,38 @@ window.deletePost=async(id)=>{
 }
 
 /* ===== เพิ่มโพสต์ (เวอร์ชันเสถียร) ===== */
-window.addPosts=async()=>{
-  const links=document.getElementById("linkInput").value.split("\n");
-  const translate=document.getElementById("translateInput").value;
+window.addPosts = async () => {
+  const links = document.getElementById("linkInput").value.split("\n");
+  const translate = document.getElementById("translateInput").value;
 
-  for(let link of links){
-    if(!link.trim()) continue;
+  let postIds = [];
+  let autoDate = null;
 
-    try{
-      const match = link.match(/status\/(\d+)/);
-      if(!match) continue;
+  for (let link of links) {
+    if (!link.trim()) continue;
 
-      const postId = match[1];
-      const autoDate = getDateFromTweetId(postId);
+    const match = link.match(/status\/(\d+)/);
+    if (!match) continue;
 
-      await addDoc(postsRef,{
-        postId:postId,
-        content:translate,
-        createdAt:Timestamp.fromDate(autoDate)
-      });
+    const postId = match[1];
+    postIds.push(postId);
+
+    if (!autoDate) {
+      autoDate = getDateFromTweetId(postId);
+    }
+  }
+
+  if (postIds.length === 0) return;
+
+  await addDoc(postsRef, {
+    postIds: postIds,   // ✅ เก็บหลาย ID
+    content: translate,
+    createdAt: Timestamp.fromDate(autoDate)
+  });
+
+  document.getElementById("linkInput").value = "";
+  document.getElementById("translateInput").value = "";
+};
 
     }catch(err){
       console.error("เพิ่มโพสต์ไม่สำเร็จ:", link, err);
