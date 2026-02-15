@@ -54,6 +54,10 @@ body{
   margin-bottom:30px;
 }
 
+.post-card blockquote{
+  margin-bottom:20px;
+}
+
 .post-actions{
   margin-top:15px;
 }
@@ -133,12 +137,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDlybmqJBVyC2B3Kh09KfbsO0XvH5Md2Vo",
-  authDomain: "ikizuliveth.firebaseapp.com",
-  projectId: "ikizuliveth",
-  storageBucket: "ikizuliveth.firebasestorage.app",
-  messagingSenderId: "435466293836",
-  appId: "1:435466293836:web:15c46e9be1b484c91b9ae9"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_ID",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -151,7 +155,7 @@ const timelineContainer = document.getElementById("timelineButtons");
 let allPosts = [];
 let monthMap = {};
 
-/* ===== แปลง Tweet ID เป็นวันที่อัตโนมัติ ===== */
+/* ===== แปลง Tweet ID เป็นวันที่ ===== */
 function getDateFromTweetId(postId){
   const twitterEpoch = 1288834974657n;
   const timestamp = (BigInt(postId) >> 22n) + twitterEpoch;
@@ -169,7 +173,6 @@ function createPost(post) {
   const div = document.createElement("div");
   div.className = "post-card";
 
-  // ✅ เพิ่มบรรทัดนี้ตรงนี้เลย
   const ids = post.postIds || [post.postId];
 
   let tweetsHTML = "";
@@ -191,7 +194,7 @@ function createPost(post) {
     </div>
 
     <p id="trans-${post.id}" style="display:none;margin-top:10px;">
-      ${post.content}
+      ${post.content || ""}
     </p>
   `;
 
@@ -209,7 +212,7 @@ window.deletePost=async(id)=>{
   await deleteDoc(doc(db,"posts",id));
 }
 
-/* ===== เพิ่มโพสต์ (เวอร์ชันเสถียร) ===== */
+/* ===== เพิ่มหลายโพสต์ใน 1 การ์ด ===== */
 window.addPosts = async () => {
   const links = document.getElementById("linkInput").value.split("\n");
   const translate = document.getElementById("translateInput").value;
@@ -234,23 +237,14 @@ window.addPosts = async () => {
   if (postIds.length === 0) return;
 
   await addDoc(postsRef, {
-    postIds: postIds,   // ✅ เก็บหลาย ID
+    postIds: postIds,
     content: translate,
     createdAt: Timestamp.fromDate(autoDate)
   });
 
-  document.getElementById("linkInput").value = "";
-  document.getElementById("translateInput").value = "";
-};
-
-    }catch(err){
-      console.error("เพิ่มโพสต์ไม่สำเร็จ:", link, err);
-    }
-  }
-
   document.getElementById("linkInput").value="";
   document.getElementById("translateInput").value="";
-}
+};
 
 /* ===== Timeline ===== */
 window.showAll=()=>render(allPosts);
