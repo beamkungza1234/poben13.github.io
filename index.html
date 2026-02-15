@@ -17,6 +17,7 @@ body{
   height:100vh;
 }
 
+/* LEFT */
 /* LEFT PANEL */
 .left{
   width:260px;
@@ -134,6 +135,19 @@ body{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  deleteDoc, 
+  doc, 
+  onSnapshot, 
+  query, 
+  orderBy, 
+  Timestamp 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* 🔥 ใส่ config ของคุณ */
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -141,8 +155,14 @@ const firebaseConfig = {
   authDomain: "YOUR_AUTH_DOMAIN",
   projectId: "YOUR_PROJECT_ID",
   storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_ID",
+  messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDlybmqJBVyC2B3Kh09KfbsO0XvH5Md2Vo",
+  authDomain: "ikizuliveth.firebaseapp.com",
+  projectId: "ikizuliveth",
+  storageBucket: "ikizuliveth.firebasestorage.app",
+  messagingSenderId: "435466293836",
+  appId: "1:435466293836:web:15c46e9be1b484c91b9ae9"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -156,7 +176,15 @@ let allPosts = [];
 let monthMap = {};
 
 /* ===== แปลง Tweet ID เป็นวันที่ ===== */
+/* ===== แปลง Tweet ID เป็นวันที่อัตโนมัติ ===== */
 function getDateFromTweetId(postId){
+  try{
+    const twitterEpoch = 1288834974657n;
+    const timestamp = (BigInt(postId) >> 22n) + twitterEpoch;
+    return new Date(Number(timestamp));
+  }catch{
+    return new Date();
+  }
   const twitterEpoch = 1288834974657n;
   const timestamp = (BigInt(postId) >> 22n) + twitterEpoch;
   return new Date(Number(timestamp));
@@ -169,15 +197,20 @@ function render(posts){
   if(window.twttr) window.twttr.widgets.load();
 }
 
-function createPost(post) {
-  const div = document.createElement("div");
-  div.className = "post-card";
+/* ===== สร้างการ์ด ===== */
+function createPost(post){
+  const div=document.createElement("div");
+  div.className="post-card";
 
   const ids = post.postIds || [post.postId];
+  div.innerHTML=`
+    <blockquote class="twitter-tweet">
+      <a href="https://twitter.com/i/status/${post.postId}"></a>
+    </blockquote>
 
   let tweetsHTML = "";
 
-  ids.forEach(id => {
+  ids.forEach(id=>{
     tweetsHTML += `
       <blockquote class="twitter-tweet">
         <a href="https://twitter.com/i/status/${id}"></a>
@@ -187,7 +220,6 @@ function createPost(post) {
 
   div.innerHTML = `
     ${tweetsHTML}
-
     <div class="post-actions">
       <button class="btn-dark" onclick="toggleTranslate('${post.id}')">ดูคำแปล</button>
       <button class="btn-danger" onclick="deletePost('${post.id}')">ลบ</button>
@@ -195,12 +227,14 @@ function createPost(post) {
 
     <p id="trans-${post.id}" style="display:none;margin-top:10px;">
       ${post.content || ""}
+      ${post.content}
     </p>
   `;
 
   postsContainer.appendChild(div);
 }
 
+/* ===== toggle คำแปล ===== */
 /* ===== ปุ่มคำแปล ===== */
 window.toggleTranslate=(id)=>{
   const el=document.getElementById("trans-"+id);
@@ -212,39 +246,56 @@ window.deletePost=async(id)=>{
   await deleteDoc(doc(db,"posts",id));
 }
 
-/* ===== เพิ่มหลายโพสต์ใน 1 การ์ด ===== */
-window.addPosts = async () => {
-  const links = document.getElementById("linkInput").value.split("\n");
-  const translate = document.getElementById("translateInput").value;
+/* ===== เพิ่มโพสต์ ===== */
+/* ===== เพิ่มโพสต์ (เวอร์ชันเสถียร) ===== */
+window.addPosts=async()=>{
+  const links=document.getElementById("linkInput").value.split("\n");
+  const translate=document.getElementById("translateInput").value;
 
-  let postIds = [];
-  let autoDate = null;
+  let postIds=[];
+  let autoDate=null;
 
-  for (let link of links) {
-    if (!link.trim()) continue;
+  for(let link of links){
+    if(!link.trim()) continue;
 
     const match = link.match(/status\/(\d+)/);
-    if (!match) continue;
+    if(!match) continue;
+    try{
+      const match = link.match(/status\/(\d+)/);
+      if(!match) continue;
 
     const postId = match[1];
     postIds.push(postId);
+      const postId = match[1];
+      const autoDate = getDateFromTweetId(postId);
 
-    if (!autoDate) {
+    if(!autoDate){
       autoDate = getDateFromTweetId(postId);
     }
   }
+      await addDoc(postsRef,{
+        postId:postId,
+        content:translate,
+        createdAt:Timestamp.fromDate(autoDate)
+      });
 
-  if (postIds.length === 0) return;
+  if(postIds.length===0){
+    alert("ไม่พบลิงก์ที่ถูกต้อง");
+    return;
+    }catch(err){
+      console.error("เพิ่มโพสต์ไม่สำเร็จ:", link, err);
+    }
+  }
 
-  await addDoc(postsRef, {
-    postIds: postIds,
-    content: translate,
-    createdAt: Timestamp.fromDate(autoDate)
+  await addDoc(postsRef,{
+    postIds:postIds,
+    content:translate,
+    createdAt:autoDate ? Timestamp.fromDate(autoDate) : Timestamp.now()
   });
 
   document.getElementById("linkInput").value="";
   document.getElementById("translateInput").value="";
-};
+}
 
 /* ===== Timeline ===== */
 window.showAll=()=>render(allPosts);
@@ -258,6 +309,10 @@ onSnapshot(q,(snapshot)=>{
 
   snapshot.forEach(docSnap=>{
     const data=docSnap.data();
+
+    if(!data.createdAt){
+      data.createdAt = Timestamp.now();
+    }
     if(!data.createdAt) return;
 
     const date=data.createdAt.toDate();
