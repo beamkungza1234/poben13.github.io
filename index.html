@@ -17,13 +17,15 @@ body{
   height:100vh;
 }
 
-/* LEFT */
+/* LEFT PANEL */
 .left{
   width:260px;
   background:#f1f1f1;
   padding:20px;
   border-right:1px solid #ccc;
 }
+
+.left h2{ margin-top:0; }
 
 .left textarea{
   width:100%;
@@ -149,12 +151,14 @@ const timelineContainer = document.getElementById("timelineButtons");
 let allPosts = [];
 let monthMap = {};
 
-function getDateFromTweetId(id){
+/* ===== แปลง Tweet ID เป็นวันที่อัตโนมัติ ===== */
+function getDateFromTweetId(postId){
   const twitterEpoch = 1288834974657n;
-  const timestamp = (BigInt(id) >> 22n) + twitterEpoch;
+  const timestamp = (BigInt(postId) >> 22n) + twitterEpoch;
   return new Date(Number(timestamp));
 }
 
+/* ===== แสดงโพสต์ ===== */
 function render(posts){
   postsContainer.innerHTML="";
   posts.forEach(p=>createPost(p));
@@ -183,15 +187,18 @@ function createPost(post){
   postsContainer.appendChild(div);
 }
 
+/* ===== ปุ่มคำแปล ===== */
 window.toggleTranslate=(id)=>{
   const el=document.getElementById("trans-"+id);
   el.style.display = el.style.display==="none"?"block":"none";
 }
 
+/* ===== ลบโพสต์ ===== */
 window.deletePost=async(id)=>{
   await deleteDoc(doc(db,"posts",id));
 }
 
+/* ===== เพิ่มโพสต์ (เวอร์ชันเสถียร) ===== */
 window.addPosts=async()=>{
   const links=document.getElementById("linkInput").value.split("\n");
   const translate=document.getElementById("translateInput").value;
@@ -199,20 +206,29 @@ window.addPosts=async()=>{
   for(let link of links){
     if(!link.trim()) continue;
 
-    const postId=link.split("/").pop();
-    const autoDate=getDateFromTweetId(postId);
+    try{
+      const match = link.match(/status\/(\d+)/);
+      if(!match) continue;
 
-    await addDoc(postsRef,{
-      postId:postId,
-      content:translate,
-      createdAt:Timestamp.fromDate(autoDate)
-    });
+      const postId = match[1];
+      const autoDate = getDateFromTweetId(postId);
+
+      await addDoc(postsRef,{
+        postId:postId,
+        content:translate,
+        createdAt:Timestamp.fromDate(autoDate)
+      });
+
+    }catch(err){
+      console.error("เพิ่มโพสต์ไม่สำเร็จ:", link, err);
+    }
   }
 
   document.getElementById("linkInput").value="";
   document.getElementById("translateInput").value="";
 }
 
+/* ===== Timeline ===== */
 window.showAll=()=>render(allPosts);
 
 const q=query(postsRef,orderBy("createdAt","asc"));
@@ -224,6 +240,8 @@ onSnapshot(q,(snapshot)=>{
 
   snapshot.forEach(docSnap=>{
     const data=docSnap.data();
+    if(!data.createdAt) return;
+
     const date=data.createdAt.toDate();
     const month=date.getMonth()+1;
     const year=date.getFullYear();
@@ -236,18 +254,20 @@ onSnapshot(q,(snapshot)=>{
     monthMap[key].push(post);
   });
 
-  Object.keys(monthMap).sort((a,b)=>{
-    const [m1,y1]=a.split("-");
-    const [m2,y2]=b.split("-");
-    return new Date(y1,m1-1)-new Date(y2,m2-1);
-  }).forEach(key=>{
-    const [m,y]=key.split("-");
-    const btn=document.createElement("button");
-    btn.className="timeline-btn";
-    btn.innerText=`เดือนที่ ${m} ปี ${y}`;
-    btn.onclick=()=>render(monthMap[key]);
-    timelineContainer.appendChild(btn);
-  });
+  Object.keys(monthMap)
+    .sort((a,b)=>{
+      const [m1,y1]=a.split("-");
+      const [m2,y2]=b.split("-");
+      return new Date(y1,m1-1)-new Date(y2,m2-1);
+    })
+    .forEach(key=>{
+      const [m,y]=key.split("-");
+      const btn=document.createElement("button");
+      btn.className="timeline-btn";
+      btn.innerText=`เดือนที่ ${m} ปี ${y}`;
+      btn.onclick=()=>render(monthMap[key]);
+      timelineContainer.appendChild(btn);
+    });
 
   render(allPosts);
 });
