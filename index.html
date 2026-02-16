@@ -12,29 +12,6 @@ body{
   background:#e9ecef;
 }
 
-/* MOBILE HEADER */
-.mobile-header{
-  display:none;
-  background:#111;
-  color:white;
-  padding:12px 15px;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.logo-mobile{
-  font-weight:bold;
-  letter-spacing:2px;
-}
-
-.hamburger{
-  background:none;
-  border:none;
-  color:white;
-  font-size:22px;
-  cursor:pointer;
-}
-
 .wrapper{
   display:flex;
   height:100vh;
@@ -55,13 +32,27 @@ body{
   overflow-y:auto;
 }
 
-/* POST */
 .post-card{
   background:white;
   padding:20px;
   border-radius:14px;
   margin-bottom:30px;
   box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  min-height:120px;
+}
+
+/* Skeleton Loading */
+.skeleton{
+  height:100px;
+  background:linear-gradient(90deg,#eee,#ddd,#eee);
+  background-size:200% 100%;
+  animation:shine 1.5s infinite;
+  border-radius:8px;
+}
+
+@keyframes shine{
+  0%{background-position:200% 0;}
+  100%{background-position:-200% 0;}
 }
 
 /* RIGHT */
@@ -83,41 +74,10 @@ body{
   cursor:pointer;
   border-radius:8px;
 }
-
-/* MOBILE */
-@media (max-width:900px){
-  .left{ display:none; }
-  .mobile-header{ display:flex; }
-
-  .wrapper{
-    flex-direction:column;
-    height:auto;
-  }
-
-  .right{
-    position:fixed;
-    top:0;
-    right:-100%;
-    width:75%;
-    height:100%;
-    background:#f8f9fa;
-    z-index:999;
-    transition:0.3s ease;
-  }
-
-  .right.active{ right:0; }
-
-  .center{ padding:15px; }
-}
 </style>
 </head>
 
 <body>
-
-<div class="mobile-header">
-  <div class="logo-mobile">IKIZULIVE</div>
-  <button class="hamburger" onclick="toggleTimeline()">☰</button>
-</div>
 
 <div class="wrapper">
 
@@ -139,21 +99,13 @@ body{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-/* MOBILE */
-window.toggleTimeline = () => {
-  document.querySelector(".right").classList.toggle("active");
-}
-
-/* FIREBASE */
+/* Firebase */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "ikizuliveth.firebaseapp.com",
   projectId: "ikizuliveth",
-  storageBucket: "ikizuliveth.firebasestorage.app",
-  messagingSenderId: "435466293836",
-  appId: "1:435466293836:web:15c46e9be1b484c91b9ae9"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -166,44 +118,58 @@ const timelineContainer = document.getElementById("timelineButtons");
 let allPosts = [];
 let monthMap = {};
 
-function getDateFromTweetId(postId){
-  const twitterEpoch = 1288834974657n;
-  const timestamp = (BigInt(postId) >> 22n) + twitterEpoch;
-  return new Date(Number(timestamp));
-}
+/* ---------- LAZY LOAD OBSERVER ---------- */
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      const card = entry.target;
+      loadTweet(card);
+      observer.unobserve(card);
+    }
+  });
+},{
+  root:null,
+  threshold:0.2
+});
 
-/* 🚀 FAST RENDER */
-function render(posts){
-  postsContainer.innerHTML="";
+function loadTweet(card){
+  const post = JSON.parse(card.dataset.post);
+  card.innerHTML="";
 
-  const fragment = document.createDocumentFragment();
-
-  posts.forEach(post=>{
-    const div=document.createElement("div");
-    div.className="post-card";
-
-    post.postIds.forEach(id=>{
-      const block=document.createElement("blockquote");
-      block.className="twitter-tweet";
-      block.innerHTML=`<a href="https://twitter.com/i/status/${id}"></a>`;
-      div.appendChild(block);
-    });
-
-    fragment.appendChild(div);
+  let tweetsHTML="";
+  post.postIds.forEach(id=>{
+    tweetsHTML+=`
+      <blockquote class="twitter-tweet">
+        <a href="https://twitter.com/i/status/${id}"></a>
+      </blockquote>
+    `;
   });
 
-  postsContainer.appendChild(fragment);
+  card.innerHTML=tweetsHTML;
 
-  // โหลด embed แบบ async เฉพาะ container
-  requestAnimationFrame(()=>{
-    if(window.twttr){
-      window.twttr.widgets.load(postsContainer);
-    }
+  if(window.twttr){
+    window.twttr.widgets.load(card);
+  }
+}
+
+/* ---------- RENDER ---------- */
+function render(posts){
+  postsContainer.innerHTML="";
+  posts.forEach(p=>{
+    const div=document.createElement("div");
+    div.className="post-card";
+    div.dataset.post=JSON.stringify(p);
+
+    div.innerHTML=`<div class="skeleton"></div>`;
+    postsContainer.appendChild(div);
+
+    observer.observe(div);
   });
 }
 
 window.showAll=()=>render(allPosts);
 
+/* ---------- FIRESTORE ---------- */
 const q=query(postsRef,orderBy("createdAt","asc"));
 
 onSnapshot(q,snapshot=>{
@@ -236,7 +202,6 @@ onSnapshot(q,snapshot=>{
 });
 </script>
 
-<!-- async สำคัญมาก -->
 <script async src="https://platform.twitter.com/widgets.js"></script>
 
 </body>
