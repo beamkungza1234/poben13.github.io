@@ -9,146 +9,83 @@
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-          },
-          colors: {
-            primary: {
-              900: '#0f172a',
-              800: '#1e293b',
-              700: '#334155',
-            },
-            accent: '#3b82f6',
-          }
-        }
-      }
+      content: ["*"],
+      theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
     }
   </script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    .card-hover:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-    }
-    .btn-hover {
-      transition: all 0.2s ease;
-    }
-    .btn-hover:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-    }
-    @media (max-width: 1024px) {
-      aside.right-sidebar {
-        display: none;
-      }
-    }
-    @media (max-width: 640px) {
-      main {
-        padding: 1rem;
-      }
-      .post-card {
-        padding: 1rem !important;
-      }
-      button {
-        padding: 0.75rem 1rem !important;
-        font-size: 0.95rem !important;
-      }
-    }
+    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+    .btn-hover { transition: all 0.2s ease; }
+    .btn-hover:hover { transform: translateY(-1px); }
   </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen font-sans antialiased">
 
-<div class="flex min-h-screen">
+<div class="flex flex-col lg:flex-row min-h-screen">
 
-  <!-- LEFT SIDEBAR - Control Panel -->
-  <aside class="w-full sm:w-80 lg:w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto">
+  <!-- LEFT SIDEBAR -->
+  <aside class="w-full lg:w-72 bg-white dark:bg-gray-900 border-b lg:border-r border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto">
     <div class="p-5 sm:p-6">
 
       <div class="flex items-center gap-3 mb-8">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md">IK</div>
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl">IK</div>
         <h1 class="text-2xl font-bold tracking-tight">IKIZULIVE</h1>
       </div>
 
-      <!-- Admin Login -->
+      <!-- Admin -->
       <div class="mb-8">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">รหัสแอดมิน</label>
-        <input 
-          type="password" 
-          id="adminCode" 
-          placeholder="กรอกรหัสเพื่อเปิดสิทธิ์"
-          class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-        />
-        <button 
-          onclick="checkAdmin()"
-          class="mt-3 w-full bg-gradient-to-r from-gray-900 to-black hover:from-gray-800 hover:to-gray-900 text-white font-medium py-3 px-4 rounded-lg shadow-md btn-hover"
-        >
+        <label class="block text-sm font-medium mb-2">รหัสแอดมิน</label>
+        <input type="password" id="adminCode" placeholder="กรอกรหัสเพื่อเปิดสิทธิ์"
+          class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 outline-none text-base">
+        <button onclick="checkAdmin()"
+          class="mt-3 w-full bg-black hover:bg-gray-900 text-white font-medium py-3.5 rounded-xl btn-hover">
           เข้าสู่ระบบ
         </button>
-        <p id="adminStatus" class="mt-3 text-sm text-center">ยังไม่ได้เข้าสู่ระบบ</p>
+        <p id="adminStatus" class="mt-3 text-center text-sm">ยังไม่ได้เข้าสู่ระบบ</p>
       </div>
 
       <hr class="my-8 border-gray-200 dark:border-gray-800">
 
-      <!-- Add Multiple Posts -->
+      <!-- เพิ่มโพสต์ -->
       <div>
         <h3 class="text-lg font-semibold mb-4">เพิ่มหลายโพสต์</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">วางลิงก์ Twitter ทีละบรรทัด</p>
-        <textarea 
-          id="linkInput" 
-          rows="6"
-          class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-base"
-          placeholder="https://twitter.com/...&#10;https://twitter.com/..."
-        ></textarea>
+        <p class="text-sm text-gray-500 mb-2">วางลิงก์ทีละบรรทัด</p>
+        <textarea id="linkInput" rows="5" 
+          class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 resize-none focus:ring-2 focus:ring-blue-500 text-base"
+          placeholder="https://twitter.com/..."></textarea>
 
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-4 mb-2">คำแปล / บันทึก</p>
-        <textarea 
-          id="translateInput" 
-          rows="4"
-          class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-base"
-        ></textarea>
+        <p class="text-sm text-gray-500 mt-5 mb-2">คำแปล / บันทึก</p>
+        <textarea id="translateInput" rows="4" 
+          class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 resize-none focus:ring-2 focus:ring-blue-500 text-base"></textarea>
 
-        <button 
-          onclick="addPosts()"
-          class="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition btn-hover text-base"
-        >
+        <button onclick="addPosts()"
+          class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3.5 rounded-xl btn-hover text-base">
           เพิ่มโพสต์ทั้งหมด
         </button>
       </div>
-
     </div>
   </aside>
 
   <!-- MAIN CONTENT -->
   <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-
-    <header class="mb-8 sm:mb-10">
-      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Timeline โพสต์</h2>
-      <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm sm:text-base">จัดการ Twitter embeds และคำแปลภาษาไทย</p>
+    <header class="mb-8">
+      <h2 class="text-3xl font-bold">Timeline โพสต์</h2>
+      <p class="text-gray-500">จัดการ Twitter embeds และคำแปล</p>
     </header>
-
-    <div id="posts" class="space-y-6 sm:space-y-8"></div>
-
+    <div id="posts" class="space-y-8"></div>
   </main>
 
-  <!-- RIGHT SIDEBAR - Timeline Filter -->
-  <aside class="right-sidebar w-72 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto hidden lg:block">
+  <!-- RIGHT SIDEBAR - Timeline -->
+  <aside class="w-full lg:w-72 bg-white dark:bg-gray-900 border-t lg:border-l border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto hidden lg:block">
     <div class="p-6">
       <h3 class="text-xl font-semibold mb-6">ตัวกรองเวลา</h3>
-      
-      <button 
-        onclick="showAll()"
-        class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition mb-2 font-medium"
-      >
-        แสดงโพสต์ทั้งหมด
+      <button onclick="showAll()" 
+        class="w-full text-left px-5 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition mb-2 font-medium">
+        แสดงทั้งหมด
       </button>
-
-      <div id="timelineButtons" class="space-y-1.5"></div>
+      <div id="timelineButtons" class="space-y-1"></div>
     </div>
   </aside>
 
@@ -164,42 +101,28 @@ let isAdmin = false;
 const adminStatusEl = document.getElementById("adminStatus");
 
 function updateAdminUI() {
-  const editButtons = document.querySelectorAll('button[data-action="edit"]');
-  const deleteButtons = document.querySelectorAll('button[data-action="delete"]');
-
-  editButtons.forEach(btn => {
+  document.querySelectorAll('button[data-action="edit"], button[data-action="delete"]').forEach(btn => {
     btn.disabled = !isAdmin;
     btn.classList.toggle('opacity-50', !isAdmin);
     btn.classList.toggle('cursor-not-allowed', !isAdmin);
-    btn.classList.toggle('cursor-pointer', isAdmin);
-  });
-
-  deleteButtons.forEach(btn => {
-    btn.disabled = !isAdmin;
-    btn.classList.toggle('opacity-50', !isAdmin);
-    btn.classList.toggle('cursor-not-allowed', !isAdmin);
-    btn.classList.toggle('cursor-pointer', isAdmin);
   });
 }
 
 window.checkAdmin = () => {
   const input = document.getElementById("adminCode").value.trim();
-  
   if (input === ADMIN_PASSWORD) {
     isAdmin = true;
     adminStatusEl.textContent = "เข้าสู่ระบบสำเร็จ ✓ (แอดมิน)";
-    adminStatusEl.className = "mt-3 text-sm text-center text-green-600 dark:text-green-400 font-medium";
+    adminStatusEl.className = "mt-3 text-center text-sm text-green-600 font-medium";
   } else {
     isAdmin = false;
     adminStatusEl.textContent = "รหัสไม่ถูกต้อง ✗";
-    adminStatusEl.className = "mt-3 text-sm text-center text-red-600 dark:text-red-400 font-medium";
+    adminStatusEl.className = "mt-3 text-center text-sm text-red-600 font-medium";
   }
-
-  // อัปเดตปุ่มทั้งหมดทันทีหลัง login
   updateAdminUI();
 };
 
-/* Firebase Config */
+/* Firebase */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "ikizuliveth.firebaseapp.com",
@@ -229,127 +152,69 @@ function render(posts) {
   postsContainer.innerHTML = "";
   posts.forEach(p => createPostCard(p));
   if (window.twttr) window.twttr.widgets.load();
-  
-  // หลัง render เสร็จ → อัปเดตสถานะปุ่มตาม isAdmin
   updateAdminUI();
 }
 
 function createPostCard(post) {
   const card = document.createElement("div");
-  card.className = "bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden card-hover transition-all duration-300 post-card";
+  card.className = "bg-white dark:bg-gray-900 rounded-3xl shadow border border-gray-200 dark:border-gray-800 overflow-hidden card-hover";
 
-  let tweetsHTML = "";
-  post.postIds.forEach(id => {
-    tweetsHTML += `
-      <blockquote class="twitter-tweet">
-        <a href="https://twitter.com/i/status/${id}"></a>
-      </blockquote>
-    `;
-  });
+  let tweetsHTML = post.postIds.map(id => `
+    <blockquote class="twitter-tweet"><a href="https://twitter.com/i/status/${id}"></a></blockquote>
+  `).join("");
 
   card.innerHTML = `
-    <div class="p-5 sm:p-6 md:p-7">
+    <div class="p-5 sm:p-7">
       ${tweetsHTML}
-      
-      <div class="flex flex-wrap gap-3 mt-6">
-        <button 
-          onclick="toggleTranslate('${post.id}')"
-          class="px-5 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg font-medium transition btn-hover text-sm sm:text-base"
-        >
-          ดูคำแปล
-        </button>
-        
-        <button 
-          onclick="editPost('${post.id}')"
-          data-action="edit"
-          class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition btn-hover text-sm sm:text-base ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}"
-          ${isAdmin ? '' : 'disabled'}
-        >
-          แก้ไขคำแปล
-        </button>
-        
-        <button 
-          onclick="deletePost('${post.id}')"
-          data-action="delete"
-          class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition btn-hover text-sm sm:text-base ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}"
-          ${isAdmin ? '' : 'disabled'}
-        >
-          ลบโพสต์
-        </button>
+      <div class="flex flex-wrap gap-3 mt-7">
+        <button onclick="toggleTranslate('${post.id}')" class="px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-2xl font-medium btn-hover">ดูคำแปล</button>
+        <button onclick="editPost('${post.id}')" data-action="edit" 
+          class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-medium btn-hover ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">แก้ไขคำแปล</button>
+        <button onclick="deletePost('${post.id}')" data-action="delete" 
+          class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-medium btn-hover ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">ลบโพสต์</button>
       </div>
-
-      <div id="trans-${post.id}" class="translation mt-6 pt-6 border-t border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line hidden text-base">
+      <div id="trans-${post.id}" class="hidden mt-7 pt-7 border-t text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
         ${post.content || "ยังไม่มีคำแปล"}
       </div>
     </div>
   `;
-
   postsContainer.appendChild(card);
 }
 
-window.toggleTranslate = (id) => {
-  document.getElementById("trans-" + id).classList.toggle("hidden");
+window.toggleTranslate = id => document.getElementById("trans-"+id).classList.toggle("hidden");
+
+window.deletePost = async id => {
+  if (!isAdmin) return alert("ต้องเข้าสู่ระบบแอดมินก่อน");
+  if (!confirm("ยืนยันลบโพสต์นี้?")) return;
+  await deleteDoc(doc(db, "posts", id));
 };
 
-window.deletePost = async (id) => {
-  if (!isAdmin) return alert("ต้องเข้าสู่ระบบแอดมินก่อนถึงจะลบได้");
-  if (!confirm("ยืนยันการลบโพสต์นี้? การกระทำนี้ไม่สามารถย้อนกลับได้")) return;
-  
-  try {
-    await deleteDoc(doc(db, "posts", id));
-    alert("ลบโพสต์สำเร็จ");
-  } catch (e) {
-    alert("เกิดข้อผิดพลาดในการลบ: " + e.message);
-  }
-};
-
-window.editPost = async (id) => {
-  if (!isAdmin) return alert("ต้องเข้าสู่ระบบแอดมินก่อนถึงจะแก้ไขได้");
+window.editPost = async id => {
+  if (!isAdmin) return alert("ต้องเข้าสู่ระบบแอดมินก่อน");
   const post = allPosts.find(p => p.id === id);
-  if (!post) return alert("ไม่พบโพสต์นี้");
-  
   const newContent = prompt("แก้ไขคำแปล:", post.content || "");
   if (newContent === null) return;
-  
-  try {
-    await updateDoc(doc(db, "posts", id), { 
-      content: newContent.trim() 
-    });
-    alert("อัปเดตคำแปลสำเร็จ");
-  } catch (e) {
-    alert("เกิดข้อผิดพลาดในการอัปเดต: " + e.message);
-  }
+  await updateDoc(doc(db, "posts", id), { content: newContent.trim() });
 };
 
 window.addPosts = async () => {
   const links = document.getElementById("linkInput").value.trim().split("\n").filter(Boolean);
-  const translate = document.getElementById("translateInput").value.trim();
+  const content = document.getElementById("translateInput").value.trim();
+  const postIds = links.map(l => l.match(/status\/(\d+)/)?.[1]).filter(Boolean);
   
-  const postIds = links
-    .map(link => link.match(/status\/(\d+)/)?.[1])
-    .filter(Boolean);
-
-  if (postIds.length === 0) return alert("ไม่พบลิงก์ Twitter ที่ถูกต้อง");
-
-  try {
-    const autoDate = getDateFromTweetId(postIds[0]);
-    await addDoc(postsRef, {
-      postIds,
-      content: translate,
-      createdAt: Timestamp.fromDate(autoDate)
-    });
-    document.getElementById("linkInput").value = "";
-    document.getElementById("translateInput").value = "";
-    alert("เพิ่มโพสต์สำเร็จ");
-  } catch (e) {
-    alert("เกิดข้อผิดพลาดในการเพิ่ม: " + e.message);
-  }
+  if (postIds.length === 0) return alert("ไม่พบลิงก์ Twitter");
+  
+  const date = getDateFromTweetId(postIds[0]);
+  await addDoc(postsRef, { postIds, content, createdAt: Timestamp.fromDate(date) });
+  
+  document.getElementById("linkInput").value = "";
+  document.getElementById("translateInput").value = "";
+  alert("เพิ่มโพสต์สำเร็จ");
 };
 
 window.showAll = () => render(allPosts);
 
 const q = query(postsRef, orderBy("createdAt", "asc"));
-
 onSnapshot(q, snapshot => {
   allPosts = [];
   monthMap = {};
@@ -360,23 +225,23 @@ onSnapshot(q, snapshot => {
     const post = { id: docSnap.id, ...data };
     allPosts.push(post);
 
-    const date = data.createdAt?.toDate() || new Date();
-    const key = `${date.getMonth()+1}-${date.getFullYear()}`;
+    const d = data.createdAt.toDate();
+    const key = `${d.getMonth()+1}-${d.getFullYear()}`;
     if (!monthMap[key]) monthMap[key] = [];
     monthMap[key].push(post);
   });
 
-  // เรียงจากใหม่ → เก่า
+  // เรียงจากเก่าสุด → ใหม่สุด
   Object.keys(monthMap)
-    .sort((a,b) => {
-      const [ma,ya] = a.split("-").map(Number);
-      const [mb,yb] = b.split("-").map(Number);
-      return (yb - ya) || (mb - ma);
+    .sort((a, b) => {
+      const [mA, yA] = a.split("-").map(Number);
+      const [mB, yB] = b.split("-").map(Number);
+      return yA - yB || mA - mB;
     })
     .forEach(key => {
-      const [m,y] = key.split("-");
+      const [m, y] = key.split("-");
       const btn = document.createElement("button");
-      btn.className = "w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition font-medium text-sm sm:text-base";
+      btn.className = "w-full text-left px-5 py-3.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 transition font-medium";
       btn.textContent = `เดือน ${m} / ${y}`;
       btn.onclick = () => render(monthMap[key]);
       timelineContainer.appendChild(btn);
@@ -387,6 +252,5 @@ onSnapshot(q, snapshot => {
 </script>
 
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
 </body>
 </html>
