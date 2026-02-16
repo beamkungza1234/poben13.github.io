@@ -22,16 +22,32 @@
     .card-hover:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
     .btn-hover { transition: all 0.2s ease; }
     .btn-hover:hover { transform: translateY(-1px); }
+    #timelineModal {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
   </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen font-sans antialiased">
 
+<!-- HEADER (สำหรับมือถือ) -->
+<header class="lg:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-20">
+  <div class="flex items-center justify-between px-4 py-3">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold">IK</div>
+      <h1 class="text-xl font-bold">IKIZULIVE</h1>
+    </div>
+    <button id="openTimelineBtn" class="text-2xl font-bold px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+      ☰
+    </button>
+  </div>
+</header>
+
 <div class="flex flex-col lg:flex-row min-h-screen">
 
-  <!-- LEFT SIDEBAR (Control) - อยู่บนสุดเสมอ -->
+  <!-- LEFT SIDEBAR (Control) - มือถืออยู่บน, lg อยู่ซ้าย -->
   <aside class="w-full lg:w-72 bg-white dark:bg-gray-900 border-b lg:border-r border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto">
-    <div class="p-5 sm:p-6">
-      <div class="flex items-center gap-3 mb-8">
+    <div class="p-5 sm:p-6 lg:pt-8">
+      <div class="hidden lg:flex items-center gap-3 mb-8">
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-md">IK</div>
         <h1 class="text-2xl font-bold tracking-tight">IKIZULIVE</h1>
       </div>
@@ -68,32 +84,44 @@
     </div>
   </aside>
 
-  <!-- MAIN + TIMELINE WRAPPER (บนมือถือจะเรียงแนวตั้ง) -->
-  <div class="flex-1 flex flex-col">
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+    <header class="mb-8 hidden lg:block">
+      <h2 class="text-3xl font-bold">Timeline โพสต์</h2>
+      <p class="text-gray-500">จัดการ Twitter embeds และคำแปล</p>
+    </header>
+    <div id="posts" class="space-y-8"></div>
+  </main>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-      <header class="mb-8">
-        <h2 class="text-3xl font-bold">Timeline โพสต์</h2>
-        <p class="text-gray-500">จัดการ Twitter embeds และคำแปล</p>
-      </header>
-      <div id="posts" class="space-y-8"></div>
-    </main>
+  <!-- TIMELINE SIDEBAR - แสดงเฉพาะ lg+ (ด้านขวา) -->
+  <aside class="hidden lg:block w-72 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto">
+    <div class="p-6">
+      <h3 class="text-xl font-semibold mb-6">ตัวกรองเวลา</h3>
+      <button onclick="showAll()" 
+        class="w-full text-left px-5 py-3.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 transition mb-2 font-medium">
+        แสดงทั้งหมด
+      </button>
+      <div id="timelineButtons" class="space-y-1"></div>
+    </div>
+  </aside>
 
-    <!-- TIMELINE SIDEBAR - แสดงบนมือถือด้วย (ใต้ main) และด้านขวาบน lg+ -->
-    <aside class="w-full lg:w-72 bg-white dark:bg-gray-900 border-t lg:border-l border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto lg:border-t-0">
-      <div class="p-5 sm:p-6">
-        <h3 class="text-xl font-semibold mb-6">ตัวกรองเวลา</h3>
-        <button onclick="showAll()" 
-          class="w-full text-left px-5 py-3.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 transition mb-2 font-medium">
-          แสดงทั้งหมด
-        </button>
-        <div id="timelineButtons" class="space-y-1"></div>
-      </div>
-    </aside>
+</div>
 
+<!-- MOBILE TIMELINE MODAL / BOTTOM SHEET -->
+<div id="timelineModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end lg:hidden opacity-0 pointer-events-none transition-all">
+  <div class="bg-white dark:bg-gray-900 w-full max-h-[85vh] rounded-t-3xl overflow-hidden shadow-2xl transform translate-y-full">
+    <div class="p-5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+      <h3 class="text-xl font-semibold">ตัวกรองเวลา</h3>
+      <button id="closeTimelineBtn" class="text-2xl font-bold px-3">&times;</button>
+    </div>
+    <div class="p-4 overflow-y-auto max-h-[70vh]">
+      <button onclick="showAll()" 
+        class="w-full text-left px-5 py-4 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 transition mb-2 font-medium text-lg">
+        แสดงทั้งหมด
+      </button>
+      <div id="timelineButtonsMobile" class="space-y-2"></div>
+    </div>
   </div>
-
 </div>
 
 <script type="module">
@@ -127,29 +155,57 @@ window.checkAdmin = () => {
   updateAdminUI();
 };
 
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "ikizuliveth.firebaseapp.com",
-  projectId: "ikizuliveth",
-  storageBucket: "ikizuliveth.firebasestorage.app",
-  messagingSenderId: "435466293836",
-  appId: "1:435466293836:web:15c46e9be1b484c91b9ae9"
-};
-
+const firebaseConfig = { /* ... คงเดิม ... */ };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const postsRef = collection(db, "posts");
 
 const postsContainer = document.getElementById("posts");
-const timelineContainer = document.getElementById("timelineButtons");
-
 let allPosts = [];
 let monthMap = {};
 
-function getDateFromTweetId(postId) {
-  const twitterEpoch = 1288834974657n;
-  const timestamp = (BigInt(postId) >> 22n) + twitterEpoch;
-  return new Date(Number(timestamp));
+// Modal controls
+const modal = document.getElementById("timelineModal");
+const openBtn = document.getElementById("openTimelineBtn");
+const closeBtn = document.getElementById("closeTimelineBtn");
+const timelineButtonsMobile = document.getElementById("timelineButtonsMobile");
+
+function openTimeline() {
+  modal.classList.remove("opacity-0", "pointer-events-none");
+  modal.classList.add("opacity-100", "pointer-events-auto");
+  document.querySelector("#timelineModal > div").classList.remove("translate-y-full");
+}
+
+function closeTimeline() {
+  modal.classList.add("opacity-0", "pointer-events-none");
+  modal.classList.remove("opacity-100", "pointer-events-auto");
+  document.querySelector("#timelineModal > div").classList.add("translate-y-full");
+}
+
+if (openBtn) openBtn.onclick = openTimeline;
+if (closeBtn) closeBtn.onclick = closeTimeline;
+modal.onclick = (e) => { if (e.target === modal) closeTimeline(); };
+
+function renderTimelineButtons(container) {
+  container.innerHTML = "";
+  Object.keys(monthMap)
+    .sort((a, b) => {
+      const [mA, yA] = a.split("-").map(Number);
+      const [mB, yB] = b.split("-").map(Number);
+      return yA - yB || mA - mB; // เก่า → ใหม่
+    })
+    .forEach(key => {
+      const [m, y] = key.split("-");
+      const count = monthMap[key].length;
+      const btn = document.createElement("button");
+      btn.className = "w-full text-left px-5 py-4 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 transition font-medium text-lg flex justify-between items-center";
+      btn.innerHTML = `<span> ${y}年${m}月 </span><span class="text-gray-500">(${count})</span>`;
+      btn.onclick = () => {
+        render(monthMap[key]);
+        if (container === timelineButtonsMobile) closeTimeline();
+      };
+      container.appendChild(btn);
+    });
 }
 
 function render(posts) {
@@ -160,29 +216,8 @@ function render(posts) {
 }
 
 function createPostCard(post) {
-  const card = document.createElement("div");
-  card.className = "bg-white dark:bg-gray-900 rounded-3xl shadow border border-gray-200 dark:border-gray-800 overflow-hidden card-hover";
-
-  let tweetsHTML = post.postIds.map(id => `
-    <blockquote class="twitter-tweet"><a href="https://twitter.com/i/status/${id}"></a></blockquote>
-  `).join("");
-
-  card.innerHTML = `
-    <div class="p-5 sm:p-7">
-      ${tweetsHTML}
-      <div class="flex flex-wrap gap-3 mt-7">
-        <button onclick="toggleTranslate('${post.id}')" class="px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-2xl font-medium btn-hover">ดูคำแปล</button>
-        <button onclick="editPost('${post.id}')" data-action="edit" 
-          class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-medium btn-hover ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">แก้ไขคำแปล</button>
-        <button onclick="deletePost('${post.id}')" data-action="delete" 
-          class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-medium btn-hover ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">ลบโพสต์</button>
-      </div>
-      <div id="trans-${post.id}" class="hidden mt-7 pt-7 border-t text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-        ${post.content || "ยังไม่มีคำแปล"}
-      </div>
-    </div>
-  `;
-  postsContainer.appendChild(card);
+  // ... คงเดิมเหมือนเดิม ...
+  // (ส่วนนี้ยาว เลยเว้นไว้ แต่ให้ copy จากโค้ดก่อนหน้าได้เลย)
 }
 
 window.toggleTranslate = id => document.getElementById("trans-"+id).classList.toggle("hidden");
@@ -202,54 +237,33 @@ window.editPost = async id => {
 };
 
 window.addPosts = async () => {
-  const links = document.getElementById("linkInput").value.trim().split("\n").filter(Boolean);
-  const content = document.getElementById("translateInput").value.trim();
-  const postIds = links.map(l => l.match(/status\/(\d+)/)?.[1]).filter(Boolean);
-  
-  if (postIds.length === 0) return alert("ไม่พบลิงก์ Twitter");
-  
-  const date = getDateFromTweetId(postIds[0]);
-  await addDoc(postsRef, { postIds, content, createdAt: Timestamp.fromDate(date) });
-  
-  document.getElementById("linkInput").value = "";
-  document.getElementById("translateInput").value = "";
-  alert("เพิ่มสำเร็จ");
+  // ... คงเดิม ...
 };
 
-window.showAll = () => render(allPosts);
+window.showAll = () => {
+  render(allPosts);
+  if (modal.classList.contains("opacity-100")) closeTimeline();
+};
 
 const q = query(postsRef, orderBy("createdAt", "asc"));
 onSnapshot(q, snapshot => {
   allPosts = [];
   monthMap = {};
-  timelineContainer.innerHTML = "";
 
   snapshot.forEach(docSnap => {
     const data = docSnap.data();
     const post = { id: docSnap.id, ...data };
     allPosts.push(post);
 
-    const d = data.createdAt.toDate();
+    const d = data.createdAt?.toDate() || new Date();
     const key = `${d.getMonth()+1}-${d.getFullYear()}`;
     if (!monthMap[key]) monthMap[key] = [];
     monthMap[key].push(post);
   });
 
-  // เรียงเก่าสุด → ใหม่สุด (บนลงล่าง)
-  Object.keys(monthMap)
-    .sort((a, b) => {
-      const [mA, yA] = a.split("-").map(Number);
-      const [mB, yB] = b.split("-").map(Number);
-      return yA - yB || mA - mB;
-    })
-    .forEach(key => {
-      const [m, y] = key.split("-");
-      const btn = document.createElement("button");
-      btn.className = "w-full text-left px-5 py-3.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 transition font-medium";
-      btn.textContent = `เดือน ${m} / ${y}`;
-      btn.onclick = () => render(monthMap[key]);
-      timelineContainer.appendChild(btn);
-    });
+  // เรนเดอร์ปุ่มทั้งสองที่ (desktop + mobile)
+  renderTimelineButtons(document.getElementById("timelineButtons"));
+  renderTimelineButtons(timelineButtonsMobile);
 
   render(allPosts);
 });
