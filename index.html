@@ -1,3 +1,219 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IKIZULIVE</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#e9ecef;
+}
+
+/* MOBILE HEADER */
+.mobile-header{
+  display:none;
+  background:#111;
+  color:white;
+  padding:12px 15px;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo-mobile{
+  font-weight:bold;
+  letter-spacing:2px;
+}
+
+.hamburger{
+  background:none;
+  border:none;
+  color:white;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.wrapper{
+  display:flex;
+  height:100vh;
+}
+
+/* LEFT PANEL */
+.left{
+  width:260px;
+  background:#f1f1f1;
+  padding:20px;
+  border-right:1px solid #ccc;
+}
+
+.left textarea,
+.left input{
+  width:100%;
+  margin-bottom:10px;
+  padding:8px;
+}
+
+.left button{
+  width:100%;
+  background:black;
+  color:white;
+  border:none;
+  padding:10px;
+  cursor:pointer;
+}
+
+.admin-status{
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+/* CENTER */
+.center{
+  flex:1;
+  padding:30px;
+  overflow-y:auto;
+}
+
+.post-card{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  margin-bottom:30px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+.post-actions{
+  margin-top:15px;
+}
+
+.btn-dark{
+  background:black;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  margin-right:5px;
+  cursor:pointer;
+}
+
+.btn-danger{
+  background:#dc3545;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  cursor:pointer;
+}
+
+.translation{
+  margin-top:10px;
+  white-space:pre-line;
+}
+
+/* RIGHT */
+.right{
+  width:260px;
+  background:#f8f9fa;
+  padding:20px;
+  border-left:1px solid #ccc;
+}
+
+.timeline-btn{
+  display:block;
+  width:100%;
+  margin-bottom:10px;
+  background:#333;
+  color:white;
+  border:none;
+  padding:10px;
+  cursor:pointer;
+  border-radius:8px;
+}
+
+/* MOBILE */
+@media (max-width:900px){
+
+  .left{
+    display:none;
+  }
+
+  .mobile-header{
+    display:flex;
+  }
+
+  .wrapper{
+    flex-direction:column;
+    height:auto;
+  }
+
+  .right{
+    position:fixed;
+    top:0;
+    right:-100%;
+    width:75%;
+    height:100%;
+    background:#f8f9fa;
+    z-index:999;
+    transition:0.3s ease;
+    box-shadow:-2px 0 10px rgba(0,0,0,0.2);
+  }
+
+  .right.active{
+    right:0;
+  }
+
+  .center{
+    padding:15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <div class="logo-mobile">IKIZULIVE</div>
+  <button class="hamburger" onclick="toggleTimeline()">☰</button>
+</div>
+
+<div class="wrapper">
+
+<!-- LEFT -->
+<div class="left">
+<h2>IKIZULIVE</h2>
+
+<h4>รหัสแอดมิน</h4>
+<input type="password" id="adminCode" placeholder="กรอกรหัสแอดมิน">
+<button onclick="checkAdmin()">เข้าสู่ระบบ</button>
+<div class="admin-status" id="adminStatus">ยังไม่ได้เข้าสู่ระบบ</div>
+
+<hr>
+
+<h4>เพิ่มหลายโพสต์</h4>
+<p>1 บรรทัด = 1 ลิงก์</p>
+<textarea id="linkInput" rows="6"></textarea>
+
+<p>คำแปล</p>
+<textarea id="translateInput" rows="4"></textarea>
+
+<button onclick="addPosts()">เพิ่มโพสต์</button>
+</div>
+
+<!-- CENTER -->
+<div class="center">
+<div id="posts"></div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+<h3>Timeline</h3>
+<button class="timeline-btn" onclick="showAll(); closeTimeline()">แสดงทั้งหมด</button>
+<div id="timelineButtons"></div>
+</div>
+
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -20,6 +236,16 @@ window.checkAdmin = () => {
   }
 };
 
+window.toggleTimeline = () => {
+  const panel = document.querySelector(".right");
+  panel.classList.toggle("active");
+}
+
+window.closeTimeline = () => {
+  const panel = document.querySelector(".right");
+  panel.classList.remove("active");
+}
+
 /* Firebase */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -40,28 +266,6 @@ const timelineContainer = document.getElementById("timelineButtons");
 let allPosts = [];
 let monthMap = {};
 
-/* ----------- LAZY LOAD SETUP ----------- */
-
-const observer = new IntersectionObserver((entries)=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      const block = entry.target;
-      const tweetId = block.dataset.tweet;
-      block.innerHTML = `
-        <blockquote class="twitter-tweet">
-          <a href="https://twitter.com/i/status/${tweetId}"></a>
-        </blockquote>
-      `;
-      if(window.twttr) window.twttr.widgets.load(block);
-      observer.unobserve(block);
-    }
-  });
-},{
-  rootMargin:"200px"
-});
-
-/* ----------- FUNCTIONS ----------- */
-
 function getDateFromTweetId(postId){
   const twitterEpoch = 1288834974657n;
   const timestamp = (BigInt(postId) >> 22n) + twitterEpoch;
@@ -71,6 +275,7 @@ function getDateFromTweetId(postId){
 function render(posts){
   postsContainer.innerHTML="";
   posts.forEach(p=>createPost(p));
+  if(window.twttr) window.twttr.widgets.load();
 }
 
 function createPost(post){
@@ -80,7 +285,9 @@ function createPost(post){
   let tweetsHTML="";
   post.postIds.forEach(id=>{
     tweetsHTML+=`
-      <div class="tweet-lazy" data-tweet="${id}" style="min-height:200px; margin-bottom:10px;"></div>
+      <blockquote class="twitter-tweet">
+        <a href="https://twitter.com/i/status/${id}"></a>
+      </blockquote>
     `;
   });
 
@@ -97,14 +304,7 @@ function createPost(post){
   `;
 
   postsContainer.appendChild(div);
-
-  /* สั่ง observe ทุก tweet */
-  div.querySelectorAll(".tweet-lazy").forEach(el=>{
-    observer.observe(el);
-  });
 }
-
-/* ----------- ADMIN ----------- */
 
 window.toggleTranslate=id=>{
   const el=document.getElementById("trans-"+id);
@@ -158,9 +358,10 @@ window.addPosts=async()=>{
   document.getElementById("translateInput").value="";
 }
 
-window.showAll=()=>render(allPosts);
-
-/* ----------- FIRESTORE ----------- */
+window.showAll=()=>{
+  render(allPosts);
+  closeTimeline();
+};
 
 const q=query(postsRef,orderBy("createdAt","asc"));
 
@@ -186,10 +387,18 @@ onSnapshot(q,snapshot=>{
     const btn=document.createElement("button");
     btn.className="timeline-btn";
     btn.innerText=`เดือนที่ ${m} ปี ${y}`;
-    btn.onclick=()=>render(monthMap[key]);
+    btn.onclick=()=>{
+      render(monthMap[key]);
+      closeTimeline();
+    };
     timelineContainer.appendChild(btn);
   });
 
   render(allPosts);
 });
 </script>
+
+<script async src="https://platform.twitter.com/widgets.js"></script>
+
+</body>
+</html>
