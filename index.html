@@ -214,6 +214,8 @@ body{
 
 </div>
 
+<!-- ================= SCRIPT ================= -->
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -237,16 +239,13 @@ window.checkAdmin = () => {
 };
 
 window.toggleTimeline = () => {
-  const panel = document.querySelector(".right");
-  panel.classList.toggle("active");
+  document.querySelector(".right").classList.toggle("active");
 }
 
 window.closeTimeline = () => {
-  const panel = document.querySelector(".right");
-  panel.classList.remove("active");
+  document.querySelector(".right").classList.remove("active");
 }
 
-/* Firebase */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "ikizuliveth.firebaseapp.com",
@@ -266,6 +265,20 @@ const timelineContainer = document.getElementById("timelineButtons");
 let allPosts = [];
 let monthMap = {};
 
+/* 🚀 Lazy Load Tweet */
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      if(window.twttr){
+        window.twttr.widgets.load(entry.target);
+      }
+      observer.unobserve(entry.target);
+    }
+  });
+},{
+  rootMargin:"200px"
+});
+
 function getDateFromTweetId(postId){
   const twitterEpoch = 1288834974657n;
   const timestamp = (BigInt(postId) >> 22n) + twitterEpoch;
@@ -275,7 +288,6 @@ function getDateFromTweetId(postId){
 function render(posts){
   postsContainer.innerHTML="";
   posts.forEach(p=>createPost(p));
-  if(window.twttr) window.twttr.widgets.load();
 }
 
 function createPost(post){
@@ -285,7 +297,7 @@ function createPost(post){
   let tweetsHTML="";
   post.postIds.forEach(id=>{
     tweetsHTML+=`
-      <blockquote class="twitter-tweet">
+      <blockquote class="twitter-tweet lazy-tweet">
         <a href="https://twitter.com/i/status/${id}"></a>
       </blockquote>
     `;
@@ -304,6 +316,10 @@ function createPost(post){
   `;
 
   postsContainer.appendChild(div);
+
+  div.querySelectorAll(".lazy-tweet").forEach(el=>{
+    observer.observe(el);
+  });
 }
 
 window.toggleTranslate=id=>{
@@ -312,26 +328,16 @@ window.toggleTranslate=id=>{
 }
 
 window.deletePost=async id=>{
-  if(!isAdmin){
-    alert("คุณไม่มีสิทธิ์ลบโพสต์ ❌");
-    return;
-  }
+  if(!isAdmin){ alert("คุณไม่มีสิทธิ์ลบโพสต์ ❌"); return; }
   await deleteDoc(doc(db,"posts",id));
 }
 
 window.editPost=async id=>{
-  if(!isAdmin){
-    alert("คุณไม่มีสิทธิ์แก้ไข ❌");
-    return;
-  }
-
+  if(!isAdmin){ alert("คุณไม่มีสิทธิ์แก้ไข ❌"); return; }
   const post = allPosts.find(p=>p.id===id);
   const newContent=prompt("แก้ไขคำแปล:",post.content);
   if(newContent===null) return;
-
-  await updateDoc(doc(db,"posts",id),{
-    content:newContent
-  });
+  await updateDoc(doc(db,"posts",id),{ content:newContent });
 }
 
 window.addPosts=async()=>{
