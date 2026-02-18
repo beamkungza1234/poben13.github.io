@@ -4,173 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IKIZULIVE</title>
+<link rel="stylesheet" href="style.css">
+<script type="text/javascript" src="darkmode.js" defer></script>
 
-<style>
-body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:#e9ecef;
-}
-
-/* MOBILE HEADER */
-.mobile-header{
-  display:none;
-  background:#111;
-  color:white;
-  padding:12px 15px;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.logo-mobile{
-  font-weight:bold;
-  letter-spacing:2px;
-}
-
-.hamburger{
-  background:none;
-  border:none;
-  color:white;
-  font-size:22px;
-  cursor:pointer;
-}
-
-.wrapper{
-  display:flex;
-  height:100vh;
-}
-
-/* LEFT PANEL */
-.left{
-  width:260px;
-  background:#f1f1f1;
-  padding:20px;
-  border-right:1px solid #ccc;
-}
-
-.left textarea,
-.left input{
-  width:100%;
-  margin-bottom:10px;
-  padding:8px;
-}
-
-.left button{
-  width:100%;
-  background:black;
-  color:white;
-  border:none;
-  padding:10px;
-  cursor:pointer;
-}
-
-.admin-status{
-  font-size:14px;
-  margin-bottom:10px;
-}
-
-/* CENTER */
-.center{
-  flex:1;
-  padding:30px;
-  overflow-y:auto;
-}
-
-.post-card{
-  background:white;
-  padding:20px;
-  border-radius:14px;
-  margin-bottom:30px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
-}
-
-.post-actions{
-  margin-top:15px;
-}
-
-.btn-dark{
-  background:black;
-  color:white;
-  border:none;
-  padding:6px 12px;
-  margin-right:5px;
-  cursor:pointer;
-}
-
-.btn-danger{
-  background:#dc3545;
-  color:white;
-  border:none;
-  padding:6px 12px;
-  cursor:pointer;
-}
-
-.translation{
-  margin-top:10px;
-  white-space:pre-line;
-}
-
-/* RIGHT */
-.right{
-  width:260px;
-  background:#f8f9fa;
-  padding:20px;
-  border-left:1px solid #ccc;
-}
-
-.timeline-btn{
-  display:block;
-  width:100%;
-  margin-bottom:10px;
-  background:#333;
-  color:white;
-  border:none;
-  padding:10px;
-  cursor:pointer;
-  border-radius:8px;
-}
-
-/* MOBILE */
-@media (max-width:900px){
-
-  .left{
-    display:none;
-  }
-
-  .mobile-header{
-    display:flex;
-  }
-
-  .wrapper{
-    flex-direction:column;
-    height:auto;
-  }
-
-  .right{
-    position:fixed;
-    top:0;
-    right:-100%;
-    width:75%;
-    height:100%;
-    background:#f8f9fa;
-    z-index:999;
-    transition:0.3s ease;
-    box-shadow:-2px 0 10px rgba(0,0,0,0.2);
-  }
-
-  .right.active{
-    right:0;
-  }
-
-  .center{
-    padding:15px;
-  }
-}
-</style>
 </head>
 
 <body>
-
 <!-- MOBILE HEADER -->
 <div class="mobile-header">
   <div class="logo-mobile">IKIZULIVE</div>
@@ -192,10 +31,10 @@ body{
 
 <h4>เพิ่มหลายโพสต์</h4>
 <p>1 บรรทัด = 1 ลิงก์</p>
-<textarea id="linkInput" rows="6"></textarea>
+<textarea id="linkInput" rows="6" type="checkbox" placeholder="ex. https://x.com/user/status/123456"></textarea>
 
 <p>คำแปล</p>
-<textarea id="translateInput" rows="4"></textarea>
+<textarea id="translateInput" rows="4" type="checkbox"></textarea>
 
 <button onclick="addPosts()">เพิ่มโพสต์</button>
 </div>
@@ -207,6 +46,16 @@ body{
 
 <!-- RIGHT -->
 <div class="right">
+  <button class="hamburger" onclick="toggleTimeline()">☰</button>
+    <header>
+      <button id="theme-switch" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M484-80q-84 0-157.5-32t-128-86.5Q144-253 112-326.5T80-484q0-146 93-257.5T410-880q-18 99 11 193.5T521-521q71 71 165.5 100T880-410q-26 144-138 237T484-80Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M338.5-338.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>
+      </button>
+    </header>
+  <span class="slider"></span>
+</label>
+
 <h3>Timeline</h3>
 <button class="timeline-btn" onclick="showAll(); closeTimeline()">แสดงทั้งหมด</button>
 <div id="timelineButtons"></div>
@@ -281,6 +130,7 @@ function render(posts){
 function createPost(post){
   const div=document.createElement("div");
   div.className="post-card";
+  div.id = `post-card-${post.id}`
 
   let tweetsHTML="";
   post.postIds.forEach(id=>{
@@ -303,12 +153,21 @@ function createPost(post){
     </p>
   `;
 
+  const pTag = div.querySelector(`#trans-${post.id}`)
+  if(pTag) pTag.innerText = post.content;
+
   postsContainer.appendChild(div);
+
+  if(window.twttr && document.querySelectorAll(`.post-card`).length > 1) {
+    const newTweets = div.querySelectorAll(`twitter-tweet`);
+    newTweets.forEach(t => window.twttr.widgets.load(t));
+  }
+
 }
 
 window.toggleTranslate=id=>{
   const el=document.getElementById("trans-"+id);
-  el.style.display = el.style.display==="none"?"block":"none";
+  if(el) el.style.display = el.style.display==="none"?"block":"none";
 }
 
 window.deletePost=async id=>{
@@ -316,6 +175,8 @@ window.deletePost=async id=>{
     alert("คุณไม่มีสิทธิ์ลบโพสต์ ❌");
     return;
   }
+  if(!confirm("ยืนยันการลบโพสต์?")) return;
+  
   await deleteDoc(doc(db,"posts",id));
 }
 
@@ -326,6 +187,8 @@ window.editPost=async id=>{
   }
 
   const post = allPosts.find(p=>p.id===id);
+  if(!post) return;
+
   const newContent=prompt("แก้ไขคำแปล:",post.content);
   if(newContent===null) return;
 
@@ -359,42 +222,66 @@ window.addPosts=async()=>{
 }
 
 window.showAll=()=>{
-  render(allPosts);
-  closeTimeline();
+    render(allPosts);
+    closeTimeline();
 };
 
 const q=query(postsRef,orderBy("createdAt","asc"));
 
-onSnapshot(q,snapshot=>{
-  allPosts=[];
-  monthMap={};
-  timelineContainer.innerHTML="";
+onSnapshot(q, snapshot => {
+  
+  allPosts = [];
+  monthMap = {};
+  
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const post = { id: docSnap.id, ...data };
+    allPosts.push(post); 
 
-  snapshot.forEach(docSnap=>{
-    const data=docSnap.data();
-    const post={id:docSnap.id,...data};
-    allPosts.push(post);
-
-    const date=data.createdAt.toDate();
-    const key=`${date.getMonth()+1}-${date.getFullYear()}`;
-
-    if(!monthMap[key]) monthMap[key]=[];
+    const date = data.createdAt.toDate();
+    const key = `${date.getMonth()+1}-${date.getFullYear()}`;
+    if (!monthMap[key]) monthMap[key] = [];
     monthMap[key].push(post);
   });
-
-  Object.keys(monthMap).forEach(key=>{
-    const [m,y]=key.split("-");
-    const btn=document.createElement("button");
-    btn.className="timeline-btn";
-    btn.innerText=`เดือนที่ ${m} ปี ${y}`;
-    btn.onclick=()=>{
+  
+  timelineContainer.innerHTML = "";
+  Object.keys(monthMap).forEach(key => {
+    const [m, y] = key.split("-");
+    const btn = document.createElement("button");
+    btn.className = "timeline-btn";
+    btn.innerText = `เดือนที่ ${m} ปี ${y}`;
+    btn.onclick = () => {
       render(monthMap[key]);
       closeTimeline();
     };
     timelineContainer.appendChild(btn);
   });
 
-  render(allPosts);
+  snapshot.docChanges().forEach(change => {
+    const postData = change.doc.data();
+    const postId = change.doc.id;
+    const post = { id: postId, ...postData };
+
+    if (change.type === "added") {
+      if(!document.getElementById(`post-card-${postId}`)) {
+          createPost(post);
+      }
+    }
+    
+    if (change.type === "modified") {
+      const pTag = document.getElementById(`trans-${postId}`);
+      if (pTag) pTag.innerText = post.content;
+    }
+    
+    if (change.type === "removed") {
+      const divToRemove = document.getElementById(`post-card-${postId}`);
+      if (divToRemove) divToRemove.remove();
+    }
+  });
+
+  if(snapshot.docChanges().length === snapshot.size && window.twttr){
+      window.twttr.widgets.load();
+  }
 });
 </script>
 

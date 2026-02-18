@@ -1,0 +1,531 @@
+:root {
+  /* สีพื้นหลัง (Backgrounds) */
+  --bg-body: #e9ecef;
+  --bg-left: #f1f1f1;
+  --bg-right: #f8f9fa;
+  --bg-card: #ffffff;
+  --bg-mobile-header: #111111;
+  --input-bg-color: #ffffff;
+  --base-variant: #e8e9ed;
+  --primary-color: #3a435d;
+  --accent-color: #0071ff;
+  
+  /* สีข้อความ (Text Colors) */
+  --text-main: #000000;  
+  --text-white: #ffffff; 
+  --text-input: #000000;
+  
+  /* เส้นขอบและเงา (Borders & Shadows) */
+  --border-color: #cccccc;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-mobile-nav: -2px 0 10px rgba(0,0,0,0.2);
+
+  /* สีปุ่มกด (Buttons) */
+  --btn-black-bg: #000000;
+  --btn-danger-bg: #dc3545;
+  --btn-timeline-bg: #333333;
+}
+
+.darkmode {
+  /* สีพื้นหลัง (Backgrounds) */
+  --bg-body: #222831;
+  --bg-left: #393e46;
+  --bg-right: #393E46;
+  --bg-card: #1111;
+  --bg-mobile-header: #111111;
+  --input-bg-color: #1e1e21;
+  --base-variant: #101425;
+  --primary-color: #3a435d;
+  --accent-color: #0071ff;
+  
+  /* textcolor */
+  --text-main: #ffffff;  
+  --text-white: #ffffff; 
+  --text-input: #000000;
+  
+  /* border and shdaow */
+  --border-color: #323232;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-mobile-nav: -2px 0 10px rgba(0,0,0,0.2);
+
+  /* button */
+  --btn-black-bg: #373636;
+  --btn-danger-bg: #dc3545;
+  --btn-timeline-bg: #cccccc;
+}
+
+.darkmode input[type="checkbox"] {
+  -webkit-appearance: none; /* สำหรับ Chrome/Safari */
+  appearance: none;
+  
+  /* กำหนดขนาด (จำเป็น เพราะเมื่อล้างค่าเดิม ขนาดจะหายไป) */
+  width: 20px;
+  height: 20px;
+  
+  /* ดึงสีจากตัวแปรของคุณมาใช้ */
+  background-color: var(--input-bg-color); 
+  border: 1px solid var(--border-color);
+  border-radius: 4px; /* ปรับความมนตามชอบ */
+  
+  /* จัดตำแหน่ง */
+  vertical-align: middle;
+  cursor: pointer;
+  position: relative;
+}
+
+/* สถานะเมื่อถูกติ๊ก (Checked) */
+.darkmode input[type="checkbox"]:checked {
+  /* เปลี่ยนสีพื้นหลังเมื่อติ๊ก (อาจจะใช้สีแดงตามปุ่ม หรือสีขาวตัดกัน) */
+  background-color: var(--btn-danger-bg); 
+  border-color: var(--btn-danger-bg);
+}
+
+/* สร้างเครื่องหมายถูก (Checkmark) ด้วย CSS */
+.darkmode input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border: solid var(--text-white);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* ตัวอย่างการนำตัวแปรไปใช้กับ Element ทั่วไป */
+.darkmode h4, 
+.darkmode p {
+  color: var(--text-main);
+}
+
+.darkmode textarea {
+  background-color: var(--input-bg-color);
+  color: var(--text-white); /* หรือ --text-input ถ้าอยากได้สีดำ */
+  border: 1px solid var(--border-color);
+}
+
+.darkmode button {
+  background-color: var(--btn-black-bg); /* หรือสีอื่นตามต้องการ */
+  color: var(--text-white);
+  border: none;
+}
+
+/* --- สไตล์พื้นฐานของปุ่ม (จัดระยะห่าง/ขนาด) --- */
+.post-actions button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px; 
+  font-size: 14px;
+  transition: background-color 0.2s; /
+}
+/* ------------------------------------------------ */
+
+
+.btn-dark {
+  background-color: #e0e0e0; 
+  color: #333333;           
+}
+
+.darkmode .btn-dark {
+  background-color: var(--btn-black-bg); 
+  color: var(--text-white);              
+}
+
+/* ------------------------------------------------ */
+
+
+.btn-danger {
+  background-color: #dc3545; 
+  color: #ffffff;            
+}
+
+.darkmode .btn-danger {
+  background-color: var(--btn-danger-bg); 
+  color: var(--text-white);
+}
+
+/* --- ส่วนของ Input (ช่องกรอกรหัส) --- */
+.darkmode #adminCode {
+  background-color: var(--input-bg-color); /* พื้นหลังสีเทาเข้ม */
+  color: var(--text-white);                /* ตัวหนังสือสีขาว */
+  border: 1px solid var(--border-color);   /* ขอบสีตามธีม */
+  padding: 8px;                            /* เพิ่มระยะห่างหน่อยให้ดูไม่อึดอัด */
+  border-radius: 4px;
+}
+
+/* ปรับสีตัวหนังสือจางๆ (Placeholder) ให้พอมองเห็นในพื้นมืด */
+.darkmode #adminCode::placeholder {
+  color: #aaaaaa; 
+}
+
+/* --- ส่วนของปุ่ม (ถ้ายังไม่ได้ใส่ class ให้ปุ่ม) --- */
+/* ใช้ Selector เจาะจงไปที่ปุ่มที่มี onclick="checkAdmin()" */
+.darkmode button[onclick="checkAdmin()"] {
+  background-color: var(--btn-black-bg);   /* ใช้สีปุ่มดำของธีม */
+  color: var(--text-white);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.darkmode .admin-status,
+.darkmode h4 {
+  color: var(--text-main); 
+}
+
+#theme-switch {
+    height: 50px;
+    width: 50px;
+    padding: 0;
+    border-radius: 50%;
+    background-color: var(--base-variant);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+#theme-switch svg{
+    fill: var(--primary-color)
+}
+#theme-switch svg:last-child{
+    display: none;
+}
+.darkmode #theme-switch svg:first-child{
+    display: none;
+}
+.darkmode #theme-switch svg:last-child{
+    display: block;
+}
+
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-body);
+  color: var(--text-main);
+}
+
+/* MOBILE HEADER */
+.mobile-header {
+  display: none;
+  background: var(--bg-mobile-header);
+  color: var(--text-white);
+  padding: 12px 15px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-mobile {
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  color: var(--btn-black-bg);
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: 0;
+}
+
+.dark-mode .hamburger {
+  background: none;
+  border: none;
+  color: var(--base-variant);
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: 0;
+}
+
+.wrapper {
+  display: flex;
+  height: 100vh;
+}
+
+/* LEFT PANEL */
+.left {
+  width: 260px;
+  background: var(--bg-left);
+  padding: 20px;
+  border-right: 1px solid var(--border-color);
+}
+
+.left textarea,
+.left input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  box-sizing: border-box; 
+}
+
+.left button {
+  width: 100%;
+  background: var(--btn-black-bg);
+  color: var(--text-white);
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.admin-status {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+
+.center {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.post-card {
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 30px;
+  box-shadow: var(--shadow-card);
+}
+
+.post-actions {
+  margin-top: 15px;
+}
+
+.btn-dark {
+  background: var(--btn-black-bg);
+  color: var(--text-white);
+  border: none;
+  padding: 6px 12px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.btn-danger {
+  background: var(--btn-danger-bg);
+  color: var(--text-white);
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.translation {
+  margin-top: 10px;
+  white-space: pre-line;
+}
+
+
+.right {
+  width: 260px;
+  background: var(--bg-right);
+  paddbody{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#e9ecef;
+}
+
+
+.mobile-header{
+  display:none;
+  background:#111;
+  color:white;
+  padding:12px 15px;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo-mobile{
+  font-weight:bold;
+  letter-spacing:2px;
+}
+
+.wrapper{
+  display:flex;
+  height:100vh;
+}
+
+/* LEFT PANEL */
+.left{
+  width:260px;
+  background:#f1f1f1;
+  padding:20px;
+  border-right:1px solid #ccc;
+}
+
+.left textarea,
+.left input{
+  width:100%;
+  margin-bottom:10px;
+  padding:8px;
+}
+
+.left button{
+  width:100%;
+  background:black;
+  color:white;
+  border:none;
+  padding:10px;
+  cursor:pointer;
+}
+
+.admin-status{
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.center{
+  flex:1;
+  padding:30px;
+  overflow-y:auto;
+}
+
+.container {
+    text-align: left;
+}
+
+.post-card{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  margin-bottom:30px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+.post-actions{
+  margin-top:15px;
+}
+
+.btn-dark{
+  background:black;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  margin-right:5px;
+  cursor:pointer;
+}
+
+.btn-danger{
+  background:#dc3545;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  cursor:pointer;
+}
+
+.translation{
+  margin-top:10px;
+  white-space:pre-line;
+}
+
+
+.right{
+  width:260px;
+  background:#f8f9fa;
+  padding:20px;
+  border-left:1px solid #ccc;
+}
+
+.timeline-btn{
+  display:block;
+  width:100%;
+  margin-bottom:10px;
+  background:#333;
+  color:white;
+  border:none;
+  padding:10px;
+  cursor:pointer;
+  border-radius:8px;
+}
+
+@media (max-width:900px){
+
+  .left{
+    display:none;
+  }
+
+  .mobile-header{
+    display:flex;
+  }
+
+  .wrapper{
+    flex-direction:column;
+    height:auto;
+  }
+
+  .right{
+    position:fixed;
+    top:0;
+    right:-100%;
+    width:75%;
+    height:100%;
+    background:#f8f9fa;
+    z-index:999;
+    transition:0.3s ease;
+    box-shadow:-2px 0 10px rgba(0,0,0,0.2);
+  }
+
+  .right.active{
+    right:0;
+  }
+
+  .center{
+    padding:15px;
+  }
+}
+padding: 20px;
+  border-left: 1px solid var(--border-color);
+}
+
+.timeline-btn {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  background: var(--btn-timeline-bg);
+  color: var(--text-white);
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+
+  .left {
+    display: none;
+  }
+
+  .mobile-header {
+    display: flex;
+  }
+
+  .wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .right {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 75%;
+    height: 100%;
+    background: var(--bg-right);
+    z-index: 999;
+    transition: 0.3s ease;
+    box-shadow: var(--shadow-mobile-nav);
+  }
+
+  .right.active {
+    right: 0;
+  }
+
+  .center {
+    padding: 15px;
+  }
+}
